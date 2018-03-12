@@ -1,0 +1,23 @@
+﻿<Window x:Class="NashConfigurator.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NashConfigurator"
+        xmlns:View="clr-namespace:NashConfigurator.View"
+        xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
+        mc:Ignorable="d"
+        Title="HB - NashConfigurator" 
+        Height="300" 
+        Width="350">
+    <Grid>
+        <Controls:MetroAnimatedTabControl>
+            <TabItem Header="Config">
+                <View:ConfigView/>
+            </TabItem>
+            <TabItem Header="Connection">
+                <View:ConnectionView/>
+            </TabItem>
+        </Controls:MetroAnimatedTabControl>
+    </Grid>
+</Window>
