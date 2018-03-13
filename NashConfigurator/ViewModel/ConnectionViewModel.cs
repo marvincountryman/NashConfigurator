@@ -27,6 +27,9 @@ namespace NashConfigurator.ViewModel
 
         public event PropertyChangedEventHandler PropertyChanged;
 
+        /// <summary>
+        /// Sql Hostname
+        /// </summary>
         public string Hostname {
             get => connection.Hostname;
             set {
@@ -34,6 +37,10 @@ namespace NashConfigurator.ViewModel
                 RaiseNotifyPropertyChanged("Hostname");
             }
         }
+
+        /// <summary>
+        /// Sql Database
+        /// </summary>
         public string Database {
             get => connection.Database;
             set {
@@ -42,6 +49,9 @@ namespace NashConfigurator.ViewModel
             }
         }
 
+        /// <summary>
+        /// Availible Hostnames
+        /// </summary>
         public List<string> Hostnames {
             get => hostnames;
             set {
@@ -50,6 +60,9 @@ namespace NashConfigurator.ViewModel
             }
         }
 
+        /// <summary>
+        /// Sql Connection
+        /// </summary>
         public Connection Connection {
             get => connection;
             set {
@@ -60,6 +73,9 @@ namespace NashConfigurator.ViewModel
             }
         }
 
+        /// <summary>
+        /// Bit flag set by ConnectionView.xaml to indicate presence of UI
+        /// </summary>
         public bool Registered { get; set; }
 
         public ICommand TestCommand {
@@ -114,7 +130,12 @@ namespace NashConfigurator.ViewModel
         /// </summary>
         private async Task OnSave()
         {
-            connection.Save();
+            try {
+                connection.Save();
+            } catch(Exception ex) {
+                await dialogCoordinator.ShowMessageAsync(this, ":(", "Failed to save configuration!");
+                AppController.Instance.Log.Error(ex);
+            }
         }
 
         /// <summary>

@@ -16,65 +16,138 @@ namespace NashConfigurator.ViewModel
     public class CompanyViewModel : INotifyPropertyChanged
     {
         private IDialogCoordinator dialogCoordinator;
+        private Company company = new Company();
         private List<Company> companies = new List<Company>();
-        private Company company;
+        private ICommand nextCommand;
+        private ICommand lastCommand;
+        private ICommand closeCommand;
 
         public event PropertyChangedEventHandler PropertyChanged;
         
+        /// <summary>
+        /// Selected Company
+        /// </summary>
         public Company Company {
             get => company;
             set {
                 company = value;
-                CloseDate = value.CloseDate;
-                FiscalDate = value.FiscalDate;
-
                 RaisePropertyChanged("Company");
+
+                if (company != null)
+                {
+                    CloseDate = value.CloseDate;
+                    FiscalDate = value.FiscalDate;
+                }
             }
         }
-        public DateTime CloseDate { get; set; }
-        public DateTime FiscalDate { get; set; }
+
+        /// <summary>
+        /// Company CloseDate
+        /// </summary>
+        public DateTime CloseDate {
+            get => Company.CloseDate;
+            set {
+                Company.CloseDate = value;
+                RaisePropertyChanged("CloseDate");
+            }
+        }
+
+        /// <summary>
+        /// Company FiscalDate
+        /// </summary>
+        public DateTime FiscalDate {
+            get => Company.FiscalDate;
+            set {
+                Company.FiscalDate = value;
+                RaisePropertyChanged("FiscalDate");
+            }
+        }
+
+        /// <summary>
+        /// Availible Companies
+        /// </summary>
         public List<Company> Companies {
             get => companies;
             set {
+                if (companies == null || companies.Count == 0)
+                    Company = value.First();
+
                 companies = value;
                 RaisePropertyChanged("Companies");
             }
         }
 
-        private ICommand nextCommand;
         public ICommand NextCommand {
             get => nextCommand ?? (nextCommand = new AsyncRelayCommand(async (args) => await OnNext()));
         }
 
-        private ICommand lastCommand;
         public ICommand LastCommand {
             get => lastCommand ?? (lastCommand = new AsyncRelayCommand(async (args) => await OnLast()));
         }
 
-        private ICommand closeCommand;
         public ICommand CloseCommand {
             get => closeCommand ?? (closeCommand = new AsyncRelayCommand(async (args) => await OnClose()));
         }
 
+        /// <summary>
+        /// Shows confirmation requiring user to input company name.
+        /// </summary>
+        /// <returns></returns>
         private async Task<bool> Confirm()
         {
-            return await dialogCoordinator.ShowInputAsync(this, "Are you sure?", "Type company name to confirm.") == Company.Name;
+            string input = await dialogCoordinator.ShowInputAsync(this, "Are you sure?", "Type company name to confirm.");
+            return input.Trim() == Company.Name.Trim();
         }
 
+        /// <summary>
+        /// Show confirmation dialog, then increment FiscalDate month
+        /// </summary>
+        /// <returns></returns>
         private async Task OnNext()
         {
             if (await Confirm()) {
-                FiscalDate.AddDays(1);
+                FiscalDate = FiscalDate.AddMonths(1);
+
+                await UpdateCompany();
             }
         }
+
+        /// <summary>
+        /// Show confirmation dialog, then decrement FiscalDate month
+        /// </summary>
+        /// <returns></returns>
         private async Task OnLast() {
             if (await Confirm()) {
-                FiscalDate.AddDays(-1);
+                FiscalDate = FiscalDate.AddMonths(-1);
+
+                await UpdateCompany();
             }
         }
+
+        /// <summary>
+        /// Show confirmation dialog, then Close company
+        /// </summary>
+        /// <returns></returns>
         private async Task OnClose() {
             if (await Confirm()) {
+                Company.Closed = true;
                 CloseDate = DateTime.Now;
+
+                await UpdateCompany();
+            }
+        }
+        
+        /// <summary>
+        /// Updates Company record and displays errors if any occur
+        /// </summary>
+        /// <returns></returns>
+        private async Task UpdateCompany()
+        {
+            try {
+                await Company.Update(AppController.Instance.Connection.SqlConnection);
+            } catch(Exception ex) {
+                await dialogCoordinator.ShowMessageAsync(this, ":(", "Failed to update Company");
+                AppController.Instance.Log.Error(ex);
             }
         }
 

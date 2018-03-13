@@ -163,6 +163,7 @@
     <Compile Include="Helper\RelayCommand.cs" />
     <Compile Include="Model\Company.cs" />
     <Compile Include="Model\Connection.cs" />
+    <Compile Include="Model\Logger.cs" />
     <Compile Include="ViewModel\CompanyViewModel.cs" />
     <Compile Include="ViewModel\ConnectionViewModel.cs" />
     <Compile Include="View\CompanyView.xaml.cs">

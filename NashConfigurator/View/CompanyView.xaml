@@ -9,9 +9,7 @@
               
              mc:Ignorable="d" 
              
-             
              Dialog:DialogParticipation.Register="{Binding}"
-             
              
              d:DesignHeight="300" 
              d:DesignWidth="300">
@@ -22,21 +20,51 @@
         </Grid.RowDefinitions>
 
         <Grid Grid.Row="0">
-            <StackPanel VerticalAlignment="Center">
-                <ComboBox Margin="5"
-                          Controls:TextBoxHelper.Watermark="Company"
-                          ItemsSource="{Binding Companies, UpdateSourceTrigger=PropertyChanged}"
-                          DisplayMemberPath="Name"
-                         />
-                <DatePicker Margin="5"
+            <Grid VerticalAlignment="Center">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="36"/>
+                    <RowDefinition Height="36"/>
+                    <RowDefinition Height="36"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="70"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Grid.Row="0" 
+                           Grid.Column="0" 
+                           Margin="5"
+                           VerticalAlignment="Center">Company</TextBlock>
+                <ComboBox Grid.Row="0" 
+                          Grid.Column="1" 
+                          Margin="5" 
+                          Controls:TextBoxHelper.Watermark="Company" 
+                          ItemsSource="{Binding Companies, UpdateSourceTrigger=PropertyChanged}" 
+                          SelectedItem="{Binding Company, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="Name"/>
+                
+                <TextBlock Grid.Row="1" 
+                           Grid.Column="0" 
+                           Margin="5"
+                           VerticalAlignment="Center">Fiscal Date</TextBlock>
+                <DatePicker Grid.Row="1" 
+                            Grid.Column="1" 
+                            Margin="5" 
                             IsEnabled="False"
                             Controls:TextBoxHelper.Watermark="Fiscal Date"
-                            DisplayDate="{Binding FiscalDate, UpdateSourceTrigger=PropertyChanged}"/>
-                <DatePicker Margin="5"
+                            SelectedDate="{Binding FiscalDate, UpdateSourceTrigger=PropertyChanged}"/>
+                
+                <TextBlock Grid.Row="2" 
+                           Grid.Column="0" 
+                           Margin="5"
+                           VerticalAlignment="Center">Close Date</TextBlock>
+                <DatePicker Grid.Row="2" 
+                            Grid.Column="1" 
+                            Margin="5" 
                             IsEnabled="False"
                             Controls:TextBoxHelper.Watermark="Close Date"
-                            DisplayDate="{Binding CloseDate, UpdateSourceTrigger=PropertyChanged}"/>
-            </StackPanel>
+                            SelectedDate="{Binding CloseDate, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
         </Grid>
         <StackPanel Grid.Row="1">
             <Controls:Underline/>

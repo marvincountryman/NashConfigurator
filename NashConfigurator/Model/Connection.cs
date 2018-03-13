@@ -14,7 +14,7 @@ namespace NashConfigurator.Model
     public class Connection
     {
         [XmlIgnore]
-        public static string Filename { get; set; } = Environment.ExpandEnvironmentVariables("%APPDATA%/HBMcClure/NashConfigurator.xml");
+        public static string Filename { get; set; } = Path.Combine(Directory.GetCurrentDirectory(), "NashConfigurator.xml");
 
         public string Hostname { get; set; }
         public string Database { get; set; }
@@ -27,6 +27,10 @@ namespace NashConfigurator.Model
         [XmlIgnore]
         public SqlConnection SqlConnection; 
         
+        /// <summary>
+        /// Connect to Sql database and update CompanyViewModel's Company list
+        /// </summary>
+        /// <returns></returns>
         public async Task ConnectAsync() {
             SqlConnection = new SqlConnection($@"
                 Data Source={Hostname};
@@ -34,8 +38,12 @@ namespace NashConfigurator.Model
                 Integrated Security=SSPI;");
 
             await SqlConnection.OpenAsync();
+            AppController.Instance.CompanyViewModel.Companies = await Company.FindAll(SqlConnection);
         }
 
+        /// <summary>
+        /// Save to NashConfigurator.xaml on disk
+        /// </summary>
         public void Save()
         {
             Directory.CreateDirectory(Path.GetDirectoryName(Filename));
@@ -44,6 +52,10 @@ namespace NashConfigurator.Model
                 new XmlSerializer(typeof(Connection)).Serialize(stream, this);
         }
 
+        /// <summary>
+        /// Load new instance from NashConfigurator.xaml
+        /// </summary>
+        /// <returns></returns>
         public static Connection Load()
         {
             try {

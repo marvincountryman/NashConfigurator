@@ -12,11 +12,11 @@ namespace NashConfigurator.Helper
 {
     public class HostnameResolver
     {
-        private static void TryStartService()
-        {
-            ServiceController controller = new ServiceController("");
-        }
-
+        /// <summary>
+        /// Finds all availible SQL servers in local network via UDP broadcast, and 
+        /// searching registered servers.  This takes ~10s to complete so take care.
+        /// </summary>
+        /// <returns></returns>
         public static List<string> GetHostnameList()
         {
             List<string> hostnames = new List<string>();
@@ -35,7 +35,10 @@ namespace NashConfigurator.Helper
                 DataTable dt = SmoApplication.EnumAvailableSqlServers(false);
 
                 foreach (DataRow dr in dt.Rows) {
-                    hostnames.Add($"{dr["Name"]}\\{dr["Instance"]}");
+                    if (string.IsNullOrEmpty(dr["Instance"].ToString()))
+                        hostnames.Add(dr["Name"].ToString());
+                    else
+                        hostnames.Add($"{dr["Name"]}\\{dr["Instance"]}");
                 }
             } catch { }
 
