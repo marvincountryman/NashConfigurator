@@ -16,22 +16,29 @@
              d:DesignHeight="300" 
              d:DesignWidth="300">
     <Grid>
-        <StackPanel VerticalAlignment="Top">
-            <ComboBox Margin="5"
-                      Controls:TextBoxHelper.Watermark="Company"
-                      ItemsSource="{Binding Companies, UpdateSourceTrigger=PropertyChanged}"
-                      DisplayMemberPath="Name"
-                     />
-            <DatePicker Margin="5"
-                        IsEnabled="False"
-                        Controls:TextBoxHelper.Watermark="Fiscal Date"
-                        DisplayDate="{Binding FiscalDate, UpdateSourceTrigger=PropertyChanged}"/>
-            <DatePicker Margin="5"
-                        IsEnabled="False"
-                        Controls:TextBoxHelper.Watermark="Close Date"
-                        DisplayDate="{Binding CloseDate, UpdateSourceTrigger=PropertyChanged}"/>
-        </StackPanel>
-        <StackPanel VerticalAlignment="Bottom">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="38"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <StackPanel VerticalAlignment="Center">
+                <ComboBox Margin="5"
+                          Controls:TextBoxHelper.Watermark="Company"
+                          ItemsSource="{Binding Companies, UpdateSourceTrigger=PropertyChanged}"
+                          DisplayMemberPath="Name"
+                         />
+                <DatePicker Margin="5"
+                            IsEnabled="False"
+                            Controls:TextBoxHelper.Watermark="Fiscal Date"
+                            DisplayDate="{Binding FiscalDate, UpdateSourceTrigger=PropertyChanged}"/>
+                <DatePicker Margin="5"
+                            IsEnabled="False"
+                            Controls:TextBoxHelper.Watermark="Close Date"
+                            DisplayDate="{Binding CloseDate, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Row="1">
             <Controls:Underline/>
             
             <Grid>

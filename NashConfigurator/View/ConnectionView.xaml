@@ -17,19 +17,26 @@
              d:DesignHeight="300" 
              d:DesignWidth="300">
     <Grid>
-        <StackPanel VerticalAlignment="Top">
-            <ComboBox Margin="5" 
-                      Controls:TextBoxHelper.Watermark="Hostname" 
-                      IsEditable="True"
-                      IsSynchronizedWithCurrentItem="True"
-                      ItemsSource="{Binding Hostnames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                      Text="{Binding Hostname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-            <TextBox Margin="5" 
-                      Controls:TextBoxHelper.Watermark="Database" 
-                      Text="{Binding Database, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="38"/>
+        </Grid.RowDefinitions>
 
-        </StackPanel>
-        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+        <Grid Grid.Row="0">
+            <StackPanel VerticalAlignment="Center">
+                <ComboBox Margin="5" 
+                          Controls:TextBoxHelper.Watermark="Hostname" 
+                          IsEditable="True"
+                          IsSynchronizedWithCurrentItem="True"
+                          ItemsSource="{Binding Hostnames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Text="{Binding Hostname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+                <TextBox Margin="5" 
+                          Controls:TextBoxHelper.Watermark="Database" 
+                          Text="{Binding Database, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Row="1">
 
             <Controls:Underline/>
             <Grid >

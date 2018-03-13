@@ -61,7 +61,8 @@ namespace NashConfigurator.ViewModel
             return await dialogCoordinator.ShowInputAsync(this, "Are you sure?", "Type company name to confirm.") == Company.Name;
         }
 
-        private async Task OnNext() {
+        private async Task OnNext()
+        {
             if (await Confirm()) {
                 FiscalDate.AddDays(1);
             }

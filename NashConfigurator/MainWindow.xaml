@@ -9,7 +9,7 @@
         mc:Ignorable="d"
                       
         Title="NashConfigurator" 
-        Height="217.029" 
+        Height="244.271" 
         Width="351"
         ResizeMode="CanResize">
     <Grid>
