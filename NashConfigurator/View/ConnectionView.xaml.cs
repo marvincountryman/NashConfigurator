@@ -41,6 +41,7 @@ namespace NashConfigurator.View
             await (DataContext as ConnectionViewModel).OnLoaded();
         }
 
+        // Source: https://stackoverflow.com/a/1517794
         private bool IsUserVisible()
         {
             if (!IsVisible)
