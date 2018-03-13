@@ -1,4 +1,6 @@
 ﻿using System;
+using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
@@ -7,78 +9,36 @@ using System.Windows.Input;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 
+using MahApps.Metro.Controls.Dialogs;
+
 using NashConfigurator.Model;
+using NashConfigurator.Helper;
 
 namespace NashConfigurator.ViewModel
 {
     public class ConnectionViewModel : INotifyPropertyChanged
     {
-        private string hostname = "";
-        private string database = "";
-        private string username = "";
-        private string password = "";
-        private ISqlAuthenticator authenticator;
-        private bool canEditCredentials = true;
-        private List<string> hostnames = new List<string>();
-        private List<string> databases = new List<string>();
-        private ObservableCollection<ISqlAuthenticator> authenticators = new ObservableCollection<ISqlAuthenticator>() {
-            new WindowsAuthenticator()
-        };
+        private Connection connection;
+        private IDialogCoordinator dialogCoordinator;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public string Hostname {
-            get => hostname;
+            get => connection.Hostname;
             set {
-                hostname = value;
+                connection.Hostname = value;
                 RaiseNotifyPropertyChanged("Hostname");
             }
         }
         public string Database {
-            get => database;
+            get => connection.Database;
             set {
-                database = value;
+                connection.Database = value;
                 RaiseNotifyPropertyChanged("Database");
             }
         }
-        public string Username {
-            get => username;
-            set {
-                username = value;
-                RaiseNotifyPropertyChanged("Username");
-            }
-        }
-        public string Password {
-            private get => password;
-            set {
-                password = value;
-                RaiseNotifyPropertyChanged("Password");
-            }
-        }
-        public ISqlAuthenticator Authenticator {
-            get => authenticator;
-            set {
-                authenticator = value;
-                authenticator.LoadDefaults();
-                Username = authenticator.Username;
-                Password = authenticator.Password;
-                CanEditCredentials = !authenticator.IsReadonly;
-                RaiseNotifyPropertyChanged("Authenticator");
-            }
-        }
 
-        public bool IsValid {
-            get;
-            set;
-        }
-        public bool CanEditCredentials {
-            get => canEditCredentials;
-            set {
-                canEditCredentials = value;
-                RaiseNotifyPropertyChanged("CanEditCredentials");
-            }
-        }
-
+        private List<string> hostnames = new List<string>();
         public List<string> Hostnames {
             get => hostnames;
             set {
@@ -86,6 +46,8 @@ namespace NashConfigurator.ViewModel
                 RaiseNotifyPropertyChanged("Hostnames");
             }
         }
+
+        private List<string> databases = new List<string>();
         public List<string> Databases {
             get => databases;
             set {
@@ -93,32 +55,56 @@ namespace NashConfigurator.ViewModel
                 RaiseNotifyPropertyChanged("Hostnames");
             }
         }
-        public ObservableCollection<ISqlAuthenticator> Authenticators {
-            get => authenticators;
-            set {
-                authenticators = value;
-                RaiseNotifyPropertyChanged("Authenticators");
-            }
+
+        private ICommand testCommand;
+        public ICommand TestCommand {
+            get => testCommand ?? (testCommand = new RelayCommand((args) => OnTest()));
         }
 
-        public ICommand TestCommand;
-        public ICommand SaveCommand;
-        public ICommand LoadedCommand;
+        private ICommand saveCommand;
+        public ICommand SaveCommand {
+            get => saveCommand ?? (saveCommand = new RelayCommand((args) => OnSave()));
+        }
 
-        public ConnectionViewModel()
+        public ConnectionViewModel(IDialogCoordinator instance)
         {
-            TestCommand = new RelayCommand((args) => OnTest());
-            SaveCommand = new RelayCommand((args) => OnSave());
-            LoadedCommand = new RelayCommand(async (args) => await OnLoaded());
-            
+            connection = new Connection();
+            dialogCoordinator = instance;
         }
 
         public async Task OnLoaded()
         {
+            try {
+                Connection connection = Connection.Load();
+
+                Hostname = connection.Hostname;
+                Database = connection.Database;
+            } catch(FileNotFoundException ex) { 
+            } catch {
+                await dialogCoordinator.ShowMessageAsync(this, "Error", "Failed to load configuration!");
+            }
+
+            Hostnames.AddRange(await HostnameResolver.GetHostnameListAsync());
         }
 
-        private void OnTest() { }
-        private void OnSave() { }
+        private async Task OnTest()
+        {
+            var controller = await dialogCoordinator.ShowProgressAsync(this, "Please wait...", "Attempting to connect to database");
+            controller.SetIndeterminate();
+
+            try {
+                
+                await connection.ConnectAsync();
+            } catch {
+                await controller.CloseAsync();
+                await dialogCoordinator.ShowMessageAsync(this, ":(", "Failed to connect.");
+            }
+
+            await controller.CloseAsync();
+        }
+        private void OnSave() {
+            connection.Save();
+        }
         private void RaiseNotifyPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));

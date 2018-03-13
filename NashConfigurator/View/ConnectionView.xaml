@@ -7,43 +7,40 @@
              xmlns:local="clr-namespace:NashConfigurator.View"
              xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
              xmlns:ViewModels="clr-namespace:NashConfigurator.ViewModel"
+             xmlns:Dialog="clr-namespace:MahApps.Metro.Controls.Dialogs;assembly=MahApps.Metro"
+              
              mc:Ignorable="d" 
+             
+             
+             Dialog:DialogParticipation.Register="{Binding}"
+             
+             Loaded="onLoaded"
              
              d:DataContext="ViewModels:ConnectionViewModel"
              d:DesignHeight="300" 
              d:DesignWidth="300">
-    <i:Interaction.Triggers>
-        <i:EventTrigger EventName="Loaded">
-            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
-        </i:EventTrigger>
-    </i:Interaction.Triggers>
-    
     <StackPanel>
         <ComboBox Margin="5" 
                   Controls:TextBoxHelper.Watermark="Hostname" 
                   IsEditable="True"
-                  SelectedValue="{Binding Hostname, UpdateSourceTrigger=PropertyChanged}" 
-                  ItemsSource="{Binding Hostnames, UpdateSourceTrigger=PropertyChanged}"/>
+                  IsSynchronizedWithCurrentItem="True"
+                  ItemsSource="{Binding Hostnames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Text="{Binding Hostname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
         <ComboBox Margin="5" 
                   Controls:TextBoxHelper.Watermark="Database" 
-                  SelectedValue="{Binding Database, UpdateSourceTrigger=PropertyChanged}" 
-                  ItemsSource="{Binding Databases, UpdateSourceTrigger=PropertyChanged}"/>
-        <ComboBox Margin="5" 
-                  Controls:TextBoxHelper.Watermark="Authentication"
-                  ItemsSource="{Binding Authenticators}"
-                  SelectedItem="{Binding Authenticator}"
-                  DisplayMemberPath="Name"/>
-        <TextBox Margin="5" 
-                 Controls:TextBoxHelper.Watermark="Username" 
-                 Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
-                 IsEnabled="{Binding CanEditCredentials, UpdateSourceTrigger=PropertyChanged}"/>
-        <PasswordBox Margin="5" 
-                     Controls:TextBoxHelper.Watermark="Password" 
-                     IsEnabled="{Binding CanEditCredentials, UpdateSourceTrigger=PropertyChanged}"/>
+                  IsEditable="True" 
+                  IsSynchronizedWithCurrentItem="True"
+                  ItemsSource="{Binding Databases, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                  Text="{Binding Database, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <Controls:Underline/>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-            <Button Width="100" Margin="5" Command="{Binding TestCommand}">Test</Button>
-            <Button Width="100" Margin="5" Command="{Binding SaveCommand}">Save</Button>
-        </StackPanel>
+        <Grid HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            
+            <Button Grid.Column="0" Margin="5" Command="{Binding TestCommand}">Test</Button>
+            <Button Grid.Column="1" Margin="5" Command="{Binding SaveCommand}">Save</Button>
+        </Grid>
     </StackPanel>
 </UserControl>

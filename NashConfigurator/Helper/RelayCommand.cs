@@ -1,8 +1,9 @@
 ﻿using System;
+using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Input;
 
-namespace NashConfigurator.Model
+namespace NashConfigurator.Helper
 {
     //http://msdn.microsoft.com/en-us/magazine/dd419663.aspx#id0090030
 
@@ -48,6 +49,53 @@ namespace NashConfigurator.Model
         public void Execute(object parameter)
         {
             _execute(parameter);
+        }
+
+        #endregion // ICommand Members
+    }
+
+    public class AsyncRelayCommand : ICommand
+    {
+        #region Fields
+
+        readonly Func<object, Task> _execute;
+        readonly Predicate<object> _canExecute;
+
+        #endregion // Fields
+
+        #region Constructors
+
+        public AsyncRelayCommand(Func<object, Task> execute)
+        : this(execute, null)
+        {
+        }
+
+        public AsyncRelayCommand(Func<object, Task> execute, Predicate<object> canExecute)
+        {
+            if (execute == null)
+                throw new ArgumentNullException("execute");
+
+            _execute = execute;
+            _canExecute = canExecute;
+        }
+        #endregion // Constructors
+
+        #region ICommand Members
+
+        [DebuggerStepThrough]
+        public bool CanExecute(object parameter)
+        {
+            return _canExecute == null ? true : _canExecute(parameter);
+        }
+
+        public event EventHandler CanExecuteChanged {
+            add { CommandManager.RequerySuggested += value; }
+            remove { CommandManager.RequerySuggested -= value; }
+        }
+
+        public async void Execute(object parameter)
+        {
+            await _execute(parameter);
         }
 
         #endregion // ICommand Members
