@@ -26,33 +26,8 @@ namespace NashConfigurator.View
         {
             InitializeComponent();
 
-            DataContext = new ConnectionViewModel(DialogCoordinator.Instance);
-        }
-
-        private async void onLoaded(object sender, RoutedEventArgs e)
-        {
-            if (!IsUserVisible())
-                return;
-            if (DataContext == null)
-                return;
-            if (!(DataContext is ConnectionViewModel))
-                return;
-
-            await (DataContext as ConnectionViewModel).OnLoaded();
-        }
-
-        // Source: https://stackoverflow.com/a/1517794
-        private bool IsUserVisible()
-        {
-            if (!IsVisible)
-                return false;
-
-            FrameworkElement container = VisualParent as FrameworkElement;
-
-            Rect bounds = TransformToAncestor(container).TransformBounds(new Rect(0.0, 0.0, ActualWidth, ActualHeight));
-            Rect rect = new Rect(0.0, 0.0, container.ActualWidth, container.ActualHeight);
-
-            return rect.Contains(bounds.TopLeft) || rect.Contains(bounds.BottomRight);
+            DataContext = AppController.Instance.ConnectionViewModel;
+            AppController.Instance.ConnectionViewModel.Registered = true;
         }
     }
 }

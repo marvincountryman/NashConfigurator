@@ -16,8 +16,13 @@ namespace NashConfigurator.Model
         [XmlIgnore]
         public static string Filename { get; set; } = Environment.ExpandEnvironmentVariables("%APPDATA%/HBMcClure/NashConfigurator.xml");
 
-        public string Hostname { get; set; } = "";
-        public string Database { get; set; } = "";
+        public string Hostname { get; set; }
+        public string Database { get; set; }
+
+        [XmlIgnore]
+        public bool IsEmpty {
+            get => String.IsNullOrEmpty(Hostname) || String.IsNullOrEmpty(Database);
+        }
 
         [XmlIgnore]
         public SqlConnection SqlConnection; 
@@ -41,8 +46,12 @@ namespace NashConfigurator.Model
 
         public static Connection Load()
         {
-            using (FileStream stream = File.OpenRead(Filename))
-                return new XmlSerializer(typeof(Connection)).Deserialize(stream) as Connection;
+            try {
+                using (FileStream stream = File.OpenRead(Filename))
+                    return new XmlSerializer(typeof(Connection)).Deserialize(stream) as Connection;
+            } catch {
+                return new Connection();
+            }
         }
     }
 }

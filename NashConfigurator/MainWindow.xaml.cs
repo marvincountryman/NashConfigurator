@@ -25,5 +25,15 @@ namespace NashConfigurator
         {
             InitializeComponent();
         }
+
+        public object SelectedItem {
+            get => TabControl.SelectedItem;
+            set => TabControl.SelectedItem = value;
+        }
+
+        public int SelectedIndex {
+            get => TabControl.SelectedIndex;
+            set => TabControl.SelectedIndex = value;
+        }
     }
 }

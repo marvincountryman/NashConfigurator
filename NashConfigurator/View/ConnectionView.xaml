@@ -11,36 +11,35 @@
               
              mc:Ignorable="d" 
              
-             
              Dialog:DialogParticipation.Register="{Binding}"
-             
-             Loaded="onLoaded"
              
              d:DataContext="ViewModels:ConnectionViewModel"
              d:DesignHeight="300" 
              d:DesignWidth="300">
-    <StackPanel>
-        <ComboBox Margin="5" 
-                  Controls:TextBoxHelper.Watermark="Hostname" 
-                  IsEditable="True"
-                  IsSynchronizedWithCurrentItem="True"
-                  ItemsSource="{Binding Hostnames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  Text="{Binding Hostname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-        <ComboBox Margin="5" 
-                  Controls:TextBoxHelper.Watermark="Database" 
-                  IsEditable="True" 
-                  IsSynchronizedWithCurrentItem="True"
-                  ItemsSource="{Binding Databases, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                  Text="{Binding Database, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <Controls:Underline/>
-        <Grid HorizontalAlignment="Stretch">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            
-            <Button Grid.Column="0" Margin="5" Command="{Binding TestCommand}">Test</Button>
-            <Button Grid.Column="1" Margin="5" Command="{Binding SaveCommand}">Save</Button>
-        </Grid>
-    </StackPanel>
+    <Grid>
+        <StackPanel VerticalAlignment="Top">
+            <ComboBox Margin="5" 
+                      Controls:TextBoxHelper.Watermark="Hostname" 
+                      IsEditable="True"
+                      IsSynchronizedWithCurrentItem="True"
+                      ItemsSource="{Binding Hostnames, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      Text="{Binding Hostname, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+            <TextBox Margin="5" 
+                      Controls:TextBoxHelper.Watermark="Database" 
+                      Text="{Binding Database, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+
+        </StackPanel>
+        <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+
+            <Controls:Underline/>
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" Margin="5" Command="{Binding TestCommand}">Test</Button>
+                <Button Grid.Column="1" Margin="5" Command="{Binding SaveCommand}">Save</Button>
+            </Grid>
+        </StackPanel>
+    </Grid>
 </UserControl>

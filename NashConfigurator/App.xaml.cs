@@ -12,9 +12,13 @@ namespace NashConfigurator
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
+        public App()
+        { 
+        }
+
+        private async void OnStartup(object sender, StartupEventArgs e)
         {
-            base.OnStartup(e);
+            await AppController.Instance.Load();
         }
     }
 }

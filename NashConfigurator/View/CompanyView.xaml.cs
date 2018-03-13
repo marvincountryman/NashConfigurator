@@ -12,16 +12,22 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using NashConfigurator.ViewModel;
+
+using MahApps.Metro.Controls.Dialogs;
+
 namespace NashConfigurator.View
 {
     /// <summary>
     /// Interaction logic for ConfigView.xaml
     /// </summary>
-    public partial class ConfigView : UserControl
+    public partial class CompanyView : UserControl
     {
-        public ConfigView()
+        public CompanyView()
         {
             InitializeComponent();
+
+            DataContext = AppController.Instance.CompanyViewModel;
         }
     }
 }

@@ -18,8 +18,12 @@ namespace NashConfigurator.ViewModel
 {
     public class ConnectionViewModel : INotifyPropertyChanged
     {
-        private Connection connection;
         private IDialogCoordinator dialogCoordinator;
+
+        private List<string> hostnames = new List<string>();
+        private Connection connection = new Connection();
+        private ICommand testCommand;
+        private ICommand saveCommand;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -38,7 +42,6 @@ namespace NashConfigurator.ViewModel
             }
         }
 
-        private List<string> hostnames = new List<string>();
         public List<string> Hostnames {
             get => hostnames;
             set {
@@ -47,64 +50,77 @@ namespace NashConfigurator.ViewModel
             }
         }
 
-        private List<string> databases = new List<string>();
-        public List<string> Databases {
-            get => databases;
+        public Connection Connection {
+            get => connection;
             set {
-                databases = value;
-                RaiseNotifyPropertyChanged("Hostnames");
+                connection = value;
+                Hostname = value.Hostname;
+                Database = value.Database;
+                RaiseNotifyPropertyChanged("Connection");
             }
         }
 
-        private ICommand testCommand;
+        public bool Registered { get; set; }
+
         public ICommand TestCommand {
-            get => testCommand ?? (testCommand = new RelayCommand((args) => OnTest()));
+            get => testCommand ?? (testCommand = new AsyncRelayCommand(async (args) => await Connect()));
         }
 
-        private ICommand saveCommand;
         public ICommand SaveCommand {
-            get => saveCommand ?? (saveCommand = new RelayCommand((args) => OnSave()));
+            get => saveCommand ?? (saveCommand = new AsyncRelayCommand(async (args) => await OnSave()));
         }
 
         public ConnectionViewModel(IDialogCoordinator instance)
         {
-            connection = new Connection();
             dialogCoordinator = instance;
         }
 
-        public async Task OnLoaded()
+        /// <summary>
+        /// Connect to MSSQL database and display dialogs along the way.
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> Connect(bool show_success = true)
         {
-            try {
-                Connection connection = Connection.Load();
+            // Check if ConnectionViewModel is registered with MahApps.DialogCoordinator
+            while (!Registered)
+                await Task.Delay(1000);
 
-                Hostname = connection.Hostname;
-                Database = connection.Database;
-            } catch(FileNotFoundException ex) { 
-            } catch {
-                await dialogCoordinator.ShowMessageAsync(this, "Error", "Failed to load configuration!");
-            }
-
-            Hostnames.AddRange(await HostnameResolver.GetHostnameListAsync());
-        }
-
-        private async Task OnTest()
-        {
+            // Show progress dialog
             var controller = await dialogCoordinator.ShowProgressAsync(this, "Please wait...", "Attempting to connect to database");
             controller.SetIndeterminate();
 
             try {
-                
+                // Attempt to create sql connection
                 await connection.ConnectAsync();
             } catch {
+                // Failed..
                 await controller.CloseAsync();
                 await dialogCoordinator.ShowMessageAsync(this, ":(", "Failed to connect.");
+
+                return false;
+            }
+            
+            await controller.CloseAsync();
+
+            if (show_success) {
+                await dialogCoordinator.ShowMessageAsync(this, "Success!", $"Connected to {Hostname}!");
             }
 
-            await controller.CloseAsync();
+            return true;
         }
-        private void OnSave() {
+
+        /// <summary>
+        /// Save Connection configuration to disk.
+        /// </summary>
+        private async Task OnSave()
+        {
             connection.Save();
         }
+
+        /// <summary>
+        /// RaiseNotifyPropertyChanged
+        /// </summary>
+        /// <param name="property"></param>
         private void RaiseNotifyPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));

@@ -7,14 +7,15 @@
         xmlns:View="clr-namespace:NashConfigurator.View"
         xmlns:Controls="http://metro.mahapps.com/winfx/xaml/controls"
         mc:Ignorable="d"
-        Title="HB - NashConfigurator" 
-        Height="182" 
-        Width="312"
+                      
+        Title="NashConfigurator" 
+        Height="217.029" 
+        Width="351"
         ResizeMode="CanResize">
     <Grid>
-        <Controls:MetroAnimatedTabControl>
-            <TabItem Header="Config">
-                <View:ConfigView/>
+        <Controls:MetroAnimatedTabControl x:Name="TabControl">
+            <TabItem Header="Company">
+                <View:CompanyView/>
             </TabItem>
             <TabItem Header="Connection">
                 <View:ConnectionView/>
